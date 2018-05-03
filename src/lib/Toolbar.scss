@@ -1,0 +1,25 @@
+.k-paint__Toolbar {
+    color: #787878;
+    border: solid 1px #D3D3D3;
+    border-bottom: none;
+    background-color: #F5F5F5;
+    padding: 0 2px;
+    display: flex;
+    flex-direction: row;
+
+    .k-paint__Toolbar-button {
+        color: inherit;
+        border: solid 1px transparent;
+        border-radius: 2px;
+        background-color: transparent;
+        outline: none;
+        margin: 3px 1px;
+        padding: 6px 8px;
+        cursor: pointer;
+
+        &.k-paint__Toolbar-button--active,
+        &:hover {
+            border-color: #D1D1D1;
+        }
+    }
+}

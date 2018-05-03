@@ -1,0 +1,10 @@
+node_modules/
+src/
+.gitignore
+.npmignore
+config.js
+tsconfig.json
+webpack.config.base.js
+webpack.config.demo.js
+webpack.config.lib.js
+yarn.lock

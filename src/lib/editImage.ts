@@ -17,7 +17,7 @@ export default async function editImage(src) {
             paint.canvas.height = image.height * (paint.canvas.width / image.width);
             paint.setScale({ x: paint.canvas.width / image.width, y: paint.canvas.height / image.height });
             paint.board.history.draw();
-            return paint;
+            resolve(paint.canvas.toDataURL('image/png'));
         };
 
         image.onerror = function (e) {

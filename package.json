@@ -4,8 +4,10 @@
   "private": false,
   "author": {
     "name": "Kakhaber Bazerashvili",
-    "email": "kaxabernet@gmail.com"
+    "email": "kaxabernet@gmail.com",
+    "company": "Vabaco"
   },
+  "homepage": "https://github.com/karaxuna/k-paint",
   "scripts": {
     "start": "\"./node_modules/.bin/webpack-dev-server\" --config webpack.config.demo.js",
     "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.config.lib.js",

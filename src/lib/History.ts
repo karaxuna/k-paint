@@ -103,7 +103,7 @@ class History {
         }
     }
 
-    draw(until: number = -1, context = this.original) {
+    draw(until: number = this.stack.length - 1, context = this.original) {
         context.setTransform(this.board.paint.scale.x, 0, 0, this.board.paint.scale.y, 0, 0);
 
         let i, j;

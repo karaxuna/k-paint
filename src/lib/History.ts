@@ -67,7 +67,8 @@ class History {
         this.stack.splice(this.index + 1, this.stack.length - this.index + 1, []);
 
         if (this.stack.length > this.options.stackSize + 1) {
-            let imageData = this.getHistoryContext(1).getImageData(0, 0, this.context.canvas.width, this.context.canvas.height);
+            let ctx = this.getHistoryContext(1);
+            let imageData = ctx.getImageData(0, 0, ctx.canvas.width / this.board.paint.scale.x, ctx.canvas.height / this.board.paint.scale.y);
 
             this.stack.splice(0, 2, [{
                 prop: 'drawImage',

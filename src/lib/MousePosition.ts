@@ -11,9 +11,12 @@ class MousePosition {
     }
 
     update(e: MouseEvent) {
-        let canvas = this.paint.canvas;
-        this.original.x = e.pageX - canvas.offsetLeft;
-        this.original.y = e.pageY - canvas.offsetTop;
+        let canvas = this.paint.canvas,
+            rect = canvas.getBoundingClientRect();
+
+        this.original.x = e.clientX - rect.left;
+        this.original.y = e.clientY - rect.top;
+        
         this.x = this.original.x / this.paint.scale.x;
         this.y = this.original.y / this.paint.scale.y;
     }

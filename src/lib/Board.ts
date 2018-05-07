@@ -19,7 +19,7 @@ export interface IBoardScale {
 }
 
 export interface IBoardOperation {
-    (this: CanvasRenderingContext2D): void
+    (context: CanvasRenderingContext2D): void
 }
 
 export interface IBoardOptions {
@@ -143,7 +143,7 @@ class Board extends EventTarget {
         this.statics.concat(this.context.history.records)
             .filter((record, index) => index >= fromIndex && index <= toIndex)
             .reduce((operations, record) => operations.concat(record), [])
-            .forEach(operation => operation.call(this.context.original));
+            .forEach(operation => operation(this.context.original));
     }
 
     export(mimeType: string = 'image/png') {

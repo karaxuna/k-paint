@@ -11,8 +11,8 @@ export default async function editImage(src) {
         image.crossOrigin = 'Anonymous';
 
         image.onload = function (e) {
-            paint.board.statics.push([function () {
-                this.drawImage(image, 0, 0);
+            paint.board.statics.push([function (context) {
+                context.drawImage(image, 0, 0);
             }]);
         
             paint.board.context.canvas.height = image.height * (paint.board.context.canvas.width / image.width);

@@ -1,38 +1,38 @@
-import Toolbar from './Toolbar';
+import Board from './Board';
 
-class ErazerToolbarButton {
-    toolbar: Toolbar;
-    element: HTMLElement;
+class ErazerBoardButton {
+    board: Board;
+    container: HTMLElement;
 
-    constructor(toolbar: Toolbar) {
-        this.toolbar = toolbar;
+    constructor(board: Board) {
+        this.board = board;
     }
 
     setStyle = () => {
-        if (this.toolbar.paint.active === 'erazer') {
-            this.element.classList.add('k-paint__Toolbar-button--active');
+        if (this.board.activeToolName === 'erazer') {
+            this.container.classList.add('k-paint__Toolbar-button--active');
         }
         else {
-            this.element.classList.remove('k-paint__Toolbar-button--active');
+            this.container.classList.remove('k-paint__Toolbar-button--active');
         }
     }
 
-    mount() {
-        let element = this.element = document.createElement('button');
-        element.type = 'button';
-        element.className = 'k-paint__Toolbar-button k-paint__ErazerToolbarButton';
-        element.innerHTML = '<i class="fa fa-eraser"></i>';
-        element.title = 'Erazer';
-        element.addEventListener('click', this.handleClick);
-        this.toolbar.container.appendChild(element);
+    mount(parent: HTMLElement) {
+        let container = this.container = document.createElement('button');
+        container.type = 'button';
+        container.className = 'k-paint__Toolbar-button k-paint__ErazerBoardButton';
+        container.innerHTML = '<i class="fa fa-eraser"></i>';
+        container.title = 'Erazer';
+        container.addEventListener('click', this.handleClick);
+        parent.appendChild(container);
 
         this.setStyle();
-        this.toolbar.paint.on('setactivetool', this.setStyle);
+        this.board.on('setactivetool', this.setStyle);
     }
 
     handleClick = () => {
-        this.toolbar.paint.use('erazer');
+        this.board.use('erazer');
     }
 }
 
-export default ErazerToolbarButton;
+export default ErazerBoardButton;

@@ -1,158 +1,88 @@
-import Board from './Board';
+import EventTarget from './EventTarget';
 
-export interface HistoryOperation {
-    fn: (context: CanvasRenderingContext2D) => void,
-    prop?: string
+export interface HistoryOperation<TTarget> {
+    (this: TTarget): void;
 }
 
-export interface HistoryOptions {
-    stackSize?: number,
-    statics?: Array<Array<HistoryOperation>>
-}
-
-class History {
-    board: Board;
-    original: CanvasRenderingContext2D;
-    context: CanvasRenderingContext2D;
-    stack: Array<Array<HistoryOperation>> = [];
-    statics: Array<Array<HistoryOperation>>;
-    index: number = -1;
-    proxy: boolean = true;
-    options: HistoryOptions;
-
-    static defaultOptions = {
-        stackSize: 5,
-        statics: []
-    };
-
-    constructor(board: Board, options: HistoryOptions) {
-        this.board = board;
-        
-        this.options = {
-            ...History.defaultOptions,
-            ...options
-        };
-
-        this.statics = this.options.statics;
-    }
-
-    mount() {
-        this.original = this.board.container.getContext('2d');
-        this.context = new Proxy<CanvasRenderingContext2D>(this.original, {
-            get: (obj, prop) => {
-                if (typeof obj[prop] === 'function') {
-                    return (...args) => {
-                        if (this.proxy) this.push(prop, (self) => self[prop].apply(self, args));
-                        return obj[prop].apply(obj, args);
-                    };
-                }
-
-                return obj[prop];
-            },
-            set: (obj, prop, value) => {
-                if (this.proxy) this.push(prop, (self) => self[prop] = value);
-                obj[prop] = value;
-                return true;
-            }
-        });
-
-        this.draw();
-    }
+export default class History<TTarget> extends EventTarget {
+    records: Array<Array<HistoryOperation<TTarget>>>;
+    index: number;
 
     get operations() {
-        return this.stack[this.index];
+        return this.records[this.index];
     }
 
-    next() {
-        this.stack.splice(this.index + 1, this.stack.length - this.index + 1, []);
+    constructor(context: TTarget, records: Array<Array<HistoryOperation<TTarget>>> = [], index: number = records.length) {
+        super();
+        this.records = records;
+        this.index = index;
 
-        if (this.stack.length > this.options.stackSize + 1) {
-            let ctx = this.getHistoryContext(1);
-            let imageData = ctx.getImageData(0, 0, ctx.canvas.width / this.board.paint.scale.x, ctx.canvas.height / this.board.paint.scale.y);
-
-            this.stack.splice(0, 2, [{
-                prop: 'drawImage',
-                fn: (context) => {
-                    context.putImageData(imageData, 0, 0);
-                }
-            }]);
-        }
-
-        this.index = this.stack.length - 1;
+        this.on('change', (e) => {
+            this.index = e.toIndex;
+        });
     }
 
-    get canUndo() {
+    next(operations: Array<HistoryOperation<TTarget>> = []) {
+        this.index = this.records.push(operations) - 1;
+    }
+
+    canUndo() {
         return this.index >= 0;
     }
 
     undo() {
-        if (this.canUndo) {
-            this.index -= 1;
-            this.reset();
-            this.draw(this.index);
+        if (this.canUndo()) {
+            this.trigger('change', {
+                fromIndex: this.index,
+                toIndex: this.index - 1
+            });
         }
     }
 
-    get canRedo() {
-        return this.index < this.stack.length - 1;
+    canRedo() {
+        return this.index < this.records.length - 1;
     }
 
     redo() {
-        if (this.canRedo) {
-            this.index += 1;
-            this.draw(this.index);
+        if (this.canRedo()) {
+            this.trigger('change', {
+                fromIndex: this.index,
+                toIndex: this.index + 1
+            });
         }
-    }
-
-    draw(until: number = this.stack.length - 1, context = this.original) {
-        context.setTransform(this.board.paint.scale.x, 0, 0, this.board.paint.scale.y, 0, 0);
-
-        let i, j;
-
-        for (i = 0; i < this.statics.length; i++) {
-            for (j = 0; j < this.statics[i].length; j++) {
-                this.statics[i][j].fn(context);
-            }
-        }
-
-        for (i = 0; i <= until; i++) {
-            for (j = 0; j < this.stack[i].length; j++) {
-                this.stack[i][j].fn(context);
-            }
-        }
-    }
-
-    withoutProxy(fn) {
-        this.proxy = false;
-        fn();
-        this.proxy = true;
-    }
-
-    getHistoryContext(until) {
-        let context = document.createElement('canvas').getContext('2d');
-
-        context.canvas.width = this.original.canvas.width;
-        context.canvas.height = this.original.canvas.height;
-
-        this.draw(until, context);
-        return context;
-    }
-
-    push(prop, fn) {
-        this.operations.push({
-            prop,
-            fn
-        });
-    }
-
-    reset() {
-        this.withoutProxy(() => {
-            this.original.save();
-            this.original.setTransform(1, 0, 0, 1, 0, 0);
-            this.original.clearRect(0, 0, this.original.canvas.width, this.original.canvas.height);
-            this.original.restore();
-        });
     }
 }
 
-export default History;
+export type IHistorified<TTarget> = TTarget & {
+    original: TTarget,
+    history: History<TTarget>
+}
+
+export function historify<TTarget>(target: TTarget) {
+    let history = new History(target);
+
+    return new Proxy(target as any, {
+        get(obj, prop) {
+            switch (prop) {
+                case 'original':
+                    return target;
+                case 'history':
+                    return history;
+            }
+
+            if (typeof obj[prop] === 'function') {
+                return (...args) => {
+                    history.operations.push(function () { this[prop].apply(this, args); });
+                    return obj[prop].apply(obj, args);
+                };
+            }
+
+            return obj[prop];
+        },
+        set(obj, prop, value) {
+            history.operations.push(function () { this[prop] = value; });
+            obj[prop] = value;
+            return true;
+        }
+    }) as IHistorified<TTarget>;
+}

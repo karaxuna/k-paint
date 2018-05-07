@@ -1,34 +1,34 @@
-import Paint from './Paint';
+import Board from './Board';
 import MousePosition from './MousePosition';
 
 class PencilTool {
-    paint: Paint;
+    board: Board;
     mouse: MousePosition;
     enabled: boolean = false;
 
-    constructor(paint) {
-        this.paint = paint;
-        this.mouse = new MousePosition(paint);
+    constructor(board: Board) {
+        this.board = board;
+        this.mouse = new MousePosition(board);
     }
 
     enable() {
-        this.paint.context.canvas.addEventListener('mousedown', this.handleMouseDown);
-        this.paint.context.canvas.addEventListener('mouseup', this.handleMouseUp);
+        this.board.context.canvas.addEventListener('mousedown', this.handleMouseDown);
+        this.board.context.canvas.addEventListener('mouseup', this.handleMouseUp);
         this.enabled = true;
     }
 
     disable() {
-        this.paint.context.canvas.removeEventListener('mousedown', this.handleMouseDown);
-        this.paint.context.canvas.removeEventListener('mouseup', this.handleMouseUp);
+        this.board.context.canvas.removeEventListener('mousedown', this.handleMouseDown);
+        this.board.context.canvas.removeEventListener('mouseup', this.handleMouseUp);
         this.enabled = false;
     }
 
     handleMouseDown = (e) => {
-        let context = this.paint.context;
+        let context = this.board.context;
         let mouse = this.mouse;
         this.mouse.update(e);
 
-        this.paint.board.history.next();
+        context.history.next();
         context.beginPath();
         context.moveTo(mouse.x, mouse.y);
         this.draw();
@@ -36,12 +36,12 @@ class PencilTool {
     }
 
     draw() {
-        this.paint.context.save();
-        this.paint.context.lineTo(this.mouse.x, this.mouse.y);
-        this.paint.context.strokeStyle = this.paint.color;
-        this.paint.context.lineWidth = this.paint.size;
-        this.paint.context.stroke();
-        this.paint.context.restore();
+        this.board.context.save();
+        this.board.context.lineTo(this.mouse.x, this.mouse.y);
+        this.board.context.strokeStyle = this.board.color;
+        this.board.context.lineWidth = this.board.size;
+        this.board.context.stroke();
+        this.board.context.restore();
     }
 
     handleMouseMove = (e) => {
@@ -50,7 +50,7 @@ class PencilTool {
     }
 
     handleMouseUp = (e) => {
-        this.paint.context.canvas.removeEventListener('mousemove', this.handleMouseMove);
+        this.board.context.canvas.removeEventListener('mousemove', this.handleMouseMove);
     }
 }
 

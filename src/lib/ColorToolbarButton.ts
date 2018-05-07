@@ -1,31 +1,31 @@
-import Toolbar from './Toolbar';
+import Board from './Board';
 
-class ColorToolbarButton {
-    toolbar: Toolbar;
-    element: HTMLInputElement;
+class ColorBoardButton {
+    board: Board;
+    container: HTMLInputElement;
 
-    constructor(toolbar: Toolbar) {
-        this.toolbar = toolbar;
+    constructor(board: Board) {
+        this.board = board;
 
-        this.toolbar.paint.on('setcolor', (e) => {
-            this.element.value = e.color;
+        this.board.on('setcolor', (e) => {
+            this.container.value = e.color;
         });
     }
 
-    mount() {
-        let element = this.element = document.createElement('input');
-        element.type = 'color';
-        element.className = 'k-paint__Toolbar-button k-paint__ColorToolbarButton';
-        element.textContent = 'Color';
-        element.title = 'Color';
-        element.value = this.toolbar.paint.color;
-        element.addEventListener('change', this.handleChange);
-        this.toolbar.container.appendChild(element);
+    mount(parent: HTMLElement) {
+        let container = this.container = document.createElement('input');
+        container.type = 'color';
+        container.className = 'k-paint__Toolbar-button k-paint__ColorToolbarButton';
+        container.textContent = 'Color';
+        container.title = 'Color';
+        container.value = this.board.color;
+        container.addEventListener('change', this.handleChange);
+        parent.appendChild(container);
     }
 
     handleChange = (e) => {
-        this.toolbar.paint.setColor(e.target.value);
+        this.board.setColor(e.target.value);
     }
 }
 
-export default ColorToolbarButton;
+export default ColorBoardButton;

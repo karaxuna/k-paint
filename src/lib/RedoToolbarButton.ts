@@ -1,26 +1,26 @@
-import Toolbar from './Toolbar';
+import Board from './Board';
 
-class RedoToolbarButton {
-    toolbar: Toolbar;
-    element: HTMLElement;
+class RedoBoardButton {
+    board: Board;
+    container: HTMLElement;
 
-    constructor(toolbar: Toolbar) {
-        this.toolbar = toolbar;
+    constructor(board: Board) {
+        this.board = board;
     }
 
-    mount() {
-        let element = this.element = document.createElement('button');
-        element.type = 'button';
-        element.className = 'k-paint__Toolbar-button k-paint__RedoToolbarButton';
-        element.innerHTML = '<i class="fa fa-rotate-right"></i>';
-        element.title = 'Redo';
-        element.addEventListener('click', this.handleClick);
-        this.toolbar.container.appendChild(element);
+    mount(parent: HTMLElement) {
+        let container = this.container = document.createElement('button');
+        container.type = 'button';
+        container.className = 'k-paint__Toolbar-button k-paint__RedoBoardButton';
+        container.innerHTML = '<i class="fa fa-rotate-right"></i>';
+        container.title = 'Redo';
+        container.addEventListener('click', this.handleClick);
+        parent.appendChild(container);
     }
 
     handleClick = () => {
-        this.toolbar.paint.board.history.redo();
+        this.board.context.history.redo();
     }
 }
 
-export default RedoToolbarButton;
+export default RedoBoardButton;

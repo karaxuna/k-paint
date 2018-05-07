@@ -1,4 +1,4 @@
-import Paint from './Paint';
+import Board from './Board';
 import PencilToolbarButton from './PencilToolbarButton';
 import ErazerToolbarButton from './ErazerToolbarButton';
 import UndoToolbarButton from './UndoToolbarButton';
@@ -7,27 +7,32 @@ import SizeToolbarButton from './SizeToolbarButton';
 import ColorToolbarButton from './ColorToolbarButton';
 
 class Toolbar {
-    paint: Paint;
+    board: Board;
     container: HTMLElement;
-    buttons: any[];
+    buttons: Array<PencilToolbarButton | ErazerToolbarButton | UndoToolbarButton | RedoToolbarButton | SizeToolbarButton | ColorToolbarButton>;
 
-    constructor(paint: Paint) {
-        this.paint = paint;
+    constructor(board: Board) {
+        // Container
+        this.container = document.createElement('div');
+        this.container.className = 'k-paint__Toolbar';
+
+        // Board
+        this.board = board;
+
+        // Toolbar buttons
         this.buttons = [
-            new PencilToolbarButton(this),
-            new ErazerToolbarButton(this),
-            new SizeToolbarButton(this),
-            new ColorToolbarButton(this),
-            new UndoToolbarButton(this),
-            new RedoToolbarButton(this)
+            new PencilToolbarButton(board),
+            new ErazerToolbarButton(board),
+            new SizeToolbarButton(board),
+            new ColorToolbarButton(board),
+            new UndoToolbarButton(board),
+            new RedoToolbarButton(board)
         ];
     }
 
-    mount() {
-        let container = this.container = document.createElement('div');
-        container.className = 'k-paint__Toolbar';
-        this.paint.container.insertBefore(container, this.paint.board.container);
-        this.buttons.forEach(button => button.mount());
+    mount(parent: HTMLElement) {
+        parent.appendChild(this.container);
+        this.buttons.forEach(button => button.mount(this.container));
     }
 }
 

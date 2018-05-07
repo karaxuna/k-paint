@@ -1,26 +1,28 @@
-import Toolbar from './Toolbar';
+import Board from './Board';
 
-class UndoToolbarButton {
-    toolbar: Toolbar;
-    element: HTMLElement;
+class UndoBoardButton {
+    board: Board;
+    container: HTMLElement;
 
-    constructor(toolbar: Toolbar) {
-        this.toolbar = toolbar;
+    constructor(board: Board) {
+        this.board = board;
+
+        // Container
+        let container = this.container = document.createElement('button');
+        container.type = 'button';
+        container.className = 'k-paint__Toolbar-button k-paint__UndoBoardButton';
+        container.innerHTML = '<i class="fa fa-rotate-left"></i>';
+        container.title = 'Undo';
     }
 
-    mount() {
-        let element = this.element = document.createElement('button');
-        element.type = 'button';
-        element.className = 'k-paint__Toolbar-button k-paint__UndoToolbarButton';
-        element.innerHTML = '<i class="fa fa-rotate-left"></i>';
-        element.title = 'Undo';
-        element.addEventListener('click', this.handleClick);
-        this.toolbar.container.appendChild(element);
+    mount(parent: HTMLElement) {
+        this.container.addEventListener('click', this.handleClick);
+        parent.appendChild(this.container);
     }
 
     handleClick = () => {
-        this.toolbar.paint.board.history.undo();
+        this.board.context.history.undo();
     }
 }
 
-export default UndoToolbarButton;
+export default UndoBoardButton;

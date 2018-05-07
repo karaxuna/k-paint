@@ -1,40 +1,40 @@
-import Toolbar from './Toolbar';
+import Board from './Board';
 
-class PencilToolbarButton {
-    toolbar: Toolbar;
-    element: HTMLElement;
+class PencilBoardButton {
+    board: Board;
+    container: HTMLElement;
 
-    constructor(toolbar: Toolbar) {
-        this.toolbar = toolbar;
+    constructor(board: Board) {
+        this.board = board;
     }
 
     setStyle = () => {
-        if (this.toolbar.paint.active === 'pencil') {
-            this.element.classList.add('k-paint__Toolbar-button--active');
-            this.toolbar.paint.board.container.style.setProperty('cursor', 'crosshair');
+        if (this.board.activeToolName === 'pencil') {
+            this.container.classList.add('k-paint__Toolbar-button--active');
+            this.board.container.style.setProperty('cursor', 'crosshair');
         }
         else {
-            this.element.classList.remove('k-paint__Toolbar-button--active');
-            this.toolbar.paint.board.container.style.removeProperty('cursor');
+            this.container.classList.remove('k-paint__Toolbar-button--active');
+            this.board.container.style.removeProperty('cursor');
         }
     }
 
-    mount() {
-        let element = this.element = document.createElement('button');
-        element.type = 'button';
-        element.className = 'k-paint__Toolbar-button k-paint__PencilToolbarButton';
-        element.innerHTML = '<i class="fa fa-pencil"></i>';
-        element.title = 'Pencil';
-        element.addEventListener('click', this.handleClick);
-        this.toolbar.container.appendChild(element);
+    mount(parent: HTMLElement) {
+        let container = this.container = document.createElement('button');
+        container.type = 'button';
+        container.className = 'k-paint__Toolbar-button k-paint__PencilBoardButton';
+        container.innerHTML = '<i class="fa fa-pencil"></i>';
+        container.title = 'Pencil';
+        container.addEventListener('click', this.handleClick);
+        parent.appendChild(container);
 
         this.setStyle();
-        this.toolbar.paint.on('setactivetool', this.setStyle);
+        this.board.on('setactivetool', this.setStyle);
     }
 
     handleClick = () => {
-        this.toolbar.paint.use('pencil');
+        this.board.use('pencil');
     }
 }
 
-export default PencilToolbarButton;
+export default PencilBoardButton;

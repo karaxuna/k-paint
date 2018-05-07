@@ -1,18 +1,19 @@
-import Toolbar from './Toolbar';
+import Board from './Board';
 import EventTarget from './EventTarget';
 
-class SizeToolbarButton extends EventTarget {
-    toolbar: Toolbar;
+class SizeBoardButton extends EventTarget {
+    board: Board;
     container: HTMLElement;
     button: HTMLElement;
     dropdown: HTMLElement;
     sizes: Array<number> = [1, 3, 5, 9];
     expanded = false;
 
-    constructor(toolbar: Toolbar) {
+    constructor(board: Board) {
         super();
-        this.toolbar = toolbar;
+        this.board = board;
 
+        // Events
         this.on('setexpanded', (e) => {
             this.expanded = e.expanded;
 
@@ -40,10 +41,10 @@ class SizeToolbarButton extends EventTarget {
         this.trigger('setexpanded', { expanded: false });
     }
 
-    mount() {
+    mount(parent: HTMLElement) {
         let container = this.container = document.createElement('div');
         container.className = 'k-paint__SizeToolbarButton';
-        this.toolbar.container.appendChild(container);
+        parent.appendChild(container);
 
         let button = this.button = document.createElement('button');
         button.type = 'button';
@@ -66,7 +67,7 @@ class SizeToolbarButton extends EventTarget {
         });
 
         this.setStyle();
-        this.toolbar.paint.on('setsize', this.setStyle);
+        this.board.on('setsize', this.setStyle);
     }
 
     handleClick = () => {
@@ -76,14 +77,14 @@ class SizeToolbarButton extends EventTarget {
     }
 
     handleChange = (size) => {
-        this.toolbar.paint.setSize(size);
+        this.board.setSize(size);
         this.trigger('setexpanded', { expanded: false });
     }
 
     setStyle = () => {
         this.sizes.forEach((size, index) => {
             let node  = this.dropdown.childNodes[index] as HTMLElement;
-            if (size === this.toolbar.paint.size) {
+            if (size === this.board.size) {
                 node.classList.add('k-paint__SizeToolbarButton-dropdown-line--active');
             }
             else {
@@ -93,4 +94,4 @@ class SizeToolbarButton extends EventTarget {
     }
 }
 
-export default SizeToolbarButton;
+export default SizeBoardButton;

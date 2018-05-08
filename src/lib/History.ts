@@ -23,7 +23,8 @@ export default class History<TTarget> extends EventTarget {
     }
 
     next(operations: Array<HistoryOperation<TTarget>> = []) {
-        this.index = this.records.push(operations) - 1;
+        this.records.splice(this.index + 1, this.records.length - this.index + 1, []);
+        this.index = this.records.length - 1;
     }
 
     canUndo() {

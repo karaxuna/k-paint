@@ -74,7 +74,7 @@ class Board extends EventTarget {
         this.context = historify(container.getContext('2d'));
 
         this.context.history.on('change', ({ fromIndex, toIndex }) => {
-            this.draw(fromIndex > toIndex ? 0 : this.statics.length + fromIndex, this.statics.length + toIndex);
+            this.draw(this.statics.length + fromIndex, this.statics.length + toIndex);
         });
 
         // Tools
@@ -138,12 +138,27 @@ class Board extends EventTarget {
     }
 
     draw(fromIndex: number = 0, toIndex: number = this.context.history.records.length) {
+        // If fromIndex > toIndex then clear canvas and draw from beginning
+        if (fromIndex > toIndex) {
+            this.clear();
+            fromIndex = 0;
+        }
+
+        // Apply props
         this.context.original.setTransform(this.scale.x, 0, 0, this.scale.y, 0, 0);
 
+        // Draw each record (statics first)
         this.statics.concat(this.context.history.records)
             .filter((record, index) => index >= fromIndex && index <= toIndex)
             .reduce((operations, record) => operations.concat(record), [])
             .forEach(operation => operation(this.context.original));
+    }
+
+    clear() {
+        this.context.original.save();
+        this.context.original.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.original.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+        this.context.original.restore();
     }
 
     export(mimeType: string = 'image/png') {

@@ -72,7 +72,7 @@ export function historify<TTarget>(target: TTarget) {
 
             if (typeof obj[prop] === 'function') {
                 return (...args) => {
-                    history.operations.push(function (context) { context[prop].apply(context, args); });
+                    history.operations.push((context) => context[prop].apply(context, args));
                     return obj[prop].apply(obj, args);
                 };
             }
@@ -80,7 +80,7 @@ export function historify<TTarget>(target: TTarget) {
             return obj[prop];
         },
         set(obj, prop, value) {
-            history.operations.push(function (context) { context[prop] = value; });
+            history.operations.push((context) => context[prop] = value);
             obj[prop] = value;
             return true;
         }

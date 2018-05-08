@@ -1,18 +1,12 @@
 import Board from './Board';
-import History from './History';
 import MousePosition from './MousePosition';
 
 class ErazerTool {
     board: Board;
     mouse: MousePosition;
     enabled: boolean = false;
-    state: CanvasRenderingContext2D;
-    
-    get size() {
-        return this.board.size * 4;
-    }
 
-    constructor(board) {
+    constructor(board: Board) {
         this.board = board;
         this.mouse = new MousePosition(board);
     }
@@ -34,13 +28,7 @@ class ErazerTool {
         let mouse = this.mouse;
         this.mouse.update(e);
 
-        let tmp = Board.fromBoard(this.board);
-        tmp.container.width = this.board.context.canvas.width;
-        tmp.container.height = this.board.context.canvas.height;
-        tmp.draw();
-        this.state = tmp.context.original;
-
-        this.board.context.history.next();
+        context.history.next();
         context.beginPath();
         context.moveTo(mouse.x, mouse.y);
         this.draw();
@@ -48,11 +36,13 @@ class ErazerTool {
     }
 
     draw() {
-        this.board.context.putImageData(
-            this.state.getImageData(this.mouse.original.x - this.size, this.mouse.original.y - this.size, this.size * 2, this.size * 2),
-            this.mouse.original.x - this.size,
-            this.mouse.original.y - this.size
-        );
+        this.board.context.save();
+        this.board.context.globalCompositeOperation = 'destination-out';
+        this.board.context.lineTo(this.mouse.x, this.mouse.y);
+        this.board.context.strokeStyle = 'white';
+        this.board.context.lineWidth = this.board.size * 8;
+        this.board.context.stroke();
+        this.board.context.restore();
     }
 
     handleMouseMove = (e) => {
@@ -61,8 +51,8 @@ class ErazerTool {
     }
 
     handleMouseUp = (e) => {
+        this.board.context.globalCompositeOperation = 'source-over';
         this.board.context.canvas.removeEventListener('mousemove', this.handleMouseMove);
-        this.state = null;
     }
 }
 

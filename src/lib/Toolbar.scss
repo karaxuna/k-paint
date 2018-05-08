@@ -6,6 +6,7 @@
     padding: 0 2px;
     display: flex;
     flex-direction: row;
+    z-index: 1;
 
     .k-paint__Toolbar-button {
         color: inherit;

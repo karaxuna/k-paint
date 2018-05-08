@@ -2,8 +2,6 @@ import Board from './Board';
 
 class MousePosition {
     board: Board;
-    x: number;
-    y: number;
     original: { x: number, y: number } = { x: null, y: null };
 
     constructor(paint: Board) {
@@ -16,9 +14,14 @@ class MousePosition {
 
         this.original.x = e.clientX - rect.left;
         this.original.y = e.clientY - rect.top;
-        
-        this.x = this.original.x / this.board.scale.x;
-        this.y = this.original.y / this.board.scale.y;
+    }
+
+    get x() {
+        return this.original.x / this.board.scale.x;
+    }
+
+    get y() {
+        return this.original.y / this.board.scale.y;
     }
 }
 

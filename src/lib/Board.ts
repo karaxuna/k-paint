@@ -27,12 +27,14 @@ export interface IBoardOptions {
     color?: string,
     scale?: IBoardScale,
     activeToolName?: string,
-    statics?: Array<Array<IBoardOperation>>
+    statics?: Array<Array<IBoardOperation>>,
+    records?: Array<Array<IBoardOperation>>
 }
 
 class Board extends EventTarget {
     context: IHistorified<CanvasRenderingContext2D>;
-    container: HTMLCanvasElement;
+    container: HTMLDivElement;
+    background: CanvasRenderingContext2D;
     options: IBoardOptions;
     tools: IPaintTools;
     activeToolName: string;
@@ -45,7 +47,8 @@ class Board extends EventTarget {
         color: '#787878',
         scale: { x: 1, y: 1 },
         activeToolName: 'pencil',
-        statics: []
+        statics: [],
+        records: []
     };
 
     static fromBoard(board: Board) {
@@ -53,7 +56,8 @@ class Board extends EventTarget {
             color: board.color,
             scale: board.scale,
             activeToolName: board.activeToolName,
-            statics: board.statics
+            statics: board.statics,
+            records: board.context.history.records
         });
     }
 
@@ -70,12 +74,19 @@ class Board extends EventTarget {
         this.statics = options.statics;
 
         // Container
-        let container = this.container = document.createElement('canvas');
+        let container = this.container = document.createElement('div');
         container.className = 'k-paint__Board';
-        this.context = historify(container.getContext('2d'));
+
+        // Background
+        this.background = document.createElement('canvas').getContext('2d');
+        this.container.appendChild(this.background.canvas);
+
+        // Init context
+        this.context = historify(document.createElement('canvas').getContext('2d'), options.records);
+        this.container.appendChild(this.context.canvas);
 
         this.context.history.on('change', ({ fromIndex, toIndex }) => {
-            this.draw(this.statics.length + fromIndex, this.statics.length + toIndex);
+            this.draw(fromIndex, toIndex);
         });
 
         // Tools
@@ -104,14 +115,21 @@ class Board extends EventTarget {
             this.scale = e.scale;
         });
 
+        this.on('setwidth', (e) => {
+            this.context.canvas.width = this.background.canvas.width = e.width;
+        });
+
+        this.on('setheight', (e) => {
+            this.context.canvas.height = this.background.canvas.height = e.height;
+        });
+
         this.use(this.options.activeToolName);
-        this.draw();
     }
 
     mount(parent: HTMLElement) {
         parent.appendChild(this.container);
-        this.container.width = (this.container.parentNode as HTMLElement).clientWidth;
-        this.container.height = (this.container.parentNode as HTMLElement).clientHeight;
+        this.context.canvas.width = this.background.canvas.width = (this.container.parentNode as HTMLElement).clientWidth;
+        this.context.canvas.height = this.background.canvas.width = (this.container.parentNode as HTMLElement).clientHeight;
     }
 
     use(activeToolName: string) {
@@ -138,7 +156,24 @@ class Board extends EventTarget {
         });
     }
 
+    setWidth(width: number) {
+        this.trigger('setwidth', {
+            width
+        });
+    }
+
+    setHeight(height: number) {
+        this.trigger('setheight', {
+            height
+        });
+    }
+
     draw(fromIndex: number = 0, toIndex: number = this.context.history.records.length) {
+        this.drawStatics();
+        this.drawDynamics(fromIndex, toIndex);
+    }
+
+    drawDynamics(fromIndex: number = 0, toIndex: number = this.context.history.records.length) {
         // If fromIndex > toIndex then clear canvas and draw from beginning
         if (fromIndex > toIndex) {
             this.clear();
@@ -148,11 +183,19 @@ class Board extends EventTarget {
         // Apply props
         this.context.original.setTransform(this.scale.x, 0, 0, this.scale.y, 0, 0);
 
-        // Draw each record (statics first)
-        this.statics.concat(this.context.history.records)
+        // Draw each record
+        this.context.history.records
             .filter((record, index) => index >= fromIndex && index <= toIndex)
             .reduce((operations, record) => operations.concat(record), [])
             .forEach(operation => operation(this.context.original));
+    }
+
+    drawStatics() {
+        // Apply props
+        this.background.setTransform(this.scale.x, 0, 0, this.scale.y, 0, 0);
+
+        // Draw each record
+        this.statics.forEach(record => record.forEach(operation => operation(this.background)));
     }
 
     clear() {
@@ -163,7 +206,13 @@ class Board extends EventTarget {
     }
 
     export(mimeType: string = 'image/png') {
-        return this.context.canvas.toDataURL(mimeType);
+        let board = Board.fromBoard(this);
+        board.setWidth(this.context.canvas.width / board.scale.x);
+        board.setHeight(this.context.canvas.height / board.scale.y);
+        board.setScale({ x: 1, y: 1 });
+        board.draw();
+        board.background.drawImage(board.context.canvas, 0, 0);
+        return board.background.canvas.toDataURL(mimeType);
     }
 }
 

@@ -1,7 +1,7 @@
 import Board from './Board';
 import EventTarget from './EventTarget';
 
-class SizeBoardButton extends EventTarget {
+class SizeToolbarButton extends EventTarget {
     board: Board;
     container: HTMLElement;
     button: HTMLElement;
@@ -94,4 +94,4 @@ class SizeBoardButton extends EventTarget {
     }
 }
 
-export default SizeBoardButton;
+export default SizeToolbarButton;

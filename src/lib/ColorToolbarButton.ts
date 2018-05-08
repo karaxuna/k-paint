@@ -1,6 +1,6 @@
 import Board from './Board';
 
-class ColorBoardButton {
+class ColorToolbarButton {
     board: Board;
     container: HTMLInputElement;
 
@@ -28,4 +28,4 @@ class ColorBoardButton {
     }
 }
 
-export default ColorBoardButton;
+export default ColorToolbarButton;

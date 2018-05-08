@@ -1,6 +1,6 @@
 import Board from './Board';
 
-class PencilBoardButton {
+class PencilToolbarButton {
     board: Board;
     container: HTMLElement;
 
@@ -22,7 +22,7 @@ class PencilBoardButton {
     mount(parent: HTMLElement) {
         let container = this.container = document.createElement('button');
         container.type = 'button';
-        container.className = 'k-paint__Toolbar-button k-paint__PencilBoardButton';
+        container.className = 'k-paint__Toolbar-button k-paint__PencilToolbarButton';
         container.innerHTML = '<i class="fa fa-pencil"></i>';
         container.title = 'Pencil';
         container.addEventListener('click', this.handleClick);
@@ -37,4 +37,4 @@ class PencilBoardButton {
     }
 }
 
-export default PencilBoardButton;
+export default PencilToolbarButton;

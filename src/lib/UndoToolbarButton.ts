@@ -1,6 +1,6 @@
 import Board from './Board';
 
-class UndoBoardButton {
+class UndoToolbarButton {
     board: Board;
     container: HTMLElement;
 
@@ -10,7 +10,7 @@ class UndoBoardButton {
         // Container
         let container = this.container = document.createElement('button');
         container.type = 'button';
-        container.className = 'k-paint__Toolbar-button k-paint__UndoBoardButton';
+        container.className = 'k-paint__Toolbar-button k-paint__UndoToolbarButton';
         container.innerHTML = '<i class="fa fa-rotate-left"></i>';
         container.title = 'Undo';
     }
@@ -25,4 +25,4 @@ class UndoBoardButton {
     }
 }
 
-export default UndoBoardButton;
+export default UndoToolbarButton;

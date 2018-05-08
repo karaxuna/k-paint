@@ -1,6 +1,6 @@
 import Board from './Board';
 
-class ErazerBoardButton {
+class ErazerToolbarButton {
     board: Board;
     container: HTMLElement;
 
@@ -20,7 +20,7 @@ class ErazerBoardButton {
     mount(parent: HTMLElement) {
         let container = this.container = document.createElement('button');
         container.type = 'button';
-        container.className = 'k-paint__Toolbar-button k-paint__ErazerBoardButton';
+        container.className = 'k-paint__Toolbar-button k-paint__ErazerToolbarButton';
         container.innerHTML = '<i class="fa fa-eraser"></i>';
         container.title = 'Erazer';
         container.addEventListener('click', this.handleClick);
@@ -35,4 +35,4 @@ class ErazerBoardButton {
     }
 }
 
-export default ErazerBoardButton;
+export default ErazerToolbarButton;

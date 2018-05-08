@@ -1,6 +1,6 @@
 import Board from './Board';
 
-class RedoBoardButton {
+class RedoToolbarButton {
     board: Board;
     container: HTMLElement;
 
@@ -11,7 +11,7 @@ class RedoBoardButton {
     mount(parent: HTMLElement) {
         let container = this.container = document.createElement('button');
         container.type = 'button';
-        container.className = 'k-paint__Toolbar-button k-paint__RedoBoardButton';
+        container.className = 'k-paint__Toolbar-button k-paint__RedoToolbarButton';
         container.innerHTML = '<i class="fa fa-rotate-right"></i>';
         container.title = 'Redo';
         container.addEventListener('click', this.handleClick);
@@ -23,4 +23,4 @@ class RedoBoardButton {
     }
 }
 
-export default RedoBoardButton;
+export default RedoToolbarButton;

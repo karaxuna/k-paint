@@ -38,13 +38,13 @@ class Board extends EventTarget {
     color: string = '#787878';
     size: number = .5;
     scale: IBoardScale;
-    statics: Array<Array<IBoardOperation>>;
+    statics: Array<Array<IBoardOperation>> = [];
 
     static defaultOptions: IBoardOptions = {
         color: '#787878',
         scale: { x: 1, y: 1 },
         activeToolName: 'pencil',
-        statics: []
+        //statics: []
     };
 
     static fromBoard(board: Board) {
@@ -66,7 +66,7 @@ class Board extends EventTarget {
 
         this.color = options.color;
         this.scale = options.scale;
-        this.statics = options.statics;
+        //this.statics = options.statics;
 
         // Container
         let container = this.container = document.createElement('canvas');

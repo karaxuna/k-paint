@@ -1,6 +1,6 @@
 {
   "name": "k-paint",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": false,
   "author": {
     "name": "Kakhaber Bazerashvili",
@@ -16,6 +16,7 @@
   "main": "dist/k-paint.js",
   "types": "dist/src/lib/index.d.ts",
   "dependencies": {
+    "deepmerge": "^2.1.0",
     "font-awesome": "^4.7.0",
     "literallycanvas": "^0.5.0"
   },

@@ -1,3 +1,4 @@
+import { merge } from './Utils';
 import EventTarget from './EventTarget';
 import History, { historify, IHistorified } from './History';
 import PencilTool from './PencilTool';
@@ -38,13 +39,13 @@ class Board extends EventTarget {
     color: string = '#787878';
     size: number = .5;
     scale: IBoardScale;
-    statics: Array<Array<IBoardOperation>> = [];
+    statics: Array<Array<IBoardOperation>>;
 
     static defaultOptions: IBoardOptions = {
         color: '#787878',
         scale: { x: 1, y: 1 },
         activeToolName: 'pencil',
-        //statics: []
+        statics: []
     };
 
     static fromBoard(board: Board) {
@@ -59,14 +60,14 @@ class Board extends EventTarget {
     constructor(options: IBoardOptions = {}) {
         super();
 
-        options = this.options = {
-            ...Board.defaultOptions,
-            ...options
-        };
+        options = this.options = merge([
+            Board.defaultOptions,
+            options
+        ]);
 
         this.color = options.color;
         this.scale = options.scale;
-        //this.statics = options.statics;
+        this.statics = options.statics;
 
         // Container
         let container = this.container = document.createElement('canvas');

@@ -59,8 +59,8 @@ export type IHistorified<TTarget> = TTarget & {
     history: History<TTarget>
 }
 
-export function historify<TTarget>(target: TTarget, records: Array<Array<HistoryOperation<TTarget>>>) {
-    let history = new History(target, records);
+export function historify<TTarget>(target: TTarget, records: Array<Array<HistoryOperation<TTarget>>> = [], index = records.length) {
+    let history = new History(target, records, index);
 
     return new Proxy(target as any, {
         get(obj, prop) {

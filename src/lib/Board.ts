@@ -28,7 +28,8 @@ export interface IBoardOptions {
     scale?: IBoardScale,
     activeToolName?: string,
     statics?: Array<Array<IBoardOperation>>,
-    records?: Array<Array<IBoardOperation>>
+    records?: Array<Array<IBoardOperation>>,
+    index?: number
 }
 
 class Board extends EventTarget {
@@ -48,7 +49,8 @@ class Board extends EventTarget {
         scale: { x: 1, y: 1 },
         activeToolName: 'pencil',
         statics: [],
-        records: []
+        records: [],
+        index: -1
     };
 
     static fromBoard(board: Board) {
@@ -57,7 +59,8 @@ class Board extends EventTarget {
             scale: board.scale,
             activeToolName: board.activeToolName,
             statics: board.statics,
-            records: board.context.history.records
+            records: board.context.history.records,
+            index: board.context.history.index
         });
     }
 
@@ -82,7 +85,7 @@ class Board extends EventTarget {
         this.container.appendChild(this.background.canvas);
 
         // Init context
-        this.context = historify(document.createElement('canvas').getContext('2d'), options.records);
+        this.context = historify(document.createElement('canvas').getContext('2d'), options.records, options.index);
         this.container.appendChild(this.context.canvas);
 
         this.context.history.on('change', ({ fromIndex, toIndex }) => {
@@ -168,12 +171,12 @@ class Board extends EventTarget {
         });
     }
 
-    draw(fromIndex: number = 0, toIndex: number = this.context.history.records.length) {
+    draw(fromIndex: number = 0, toIndex: number = this.context.history.index) {
         this.drawStatics();
         this.drawDynamics(fromIndex, toIndex);
     }
 
-    drawDynamics(fromIndex: number = 0, toIndex: number = this.context.history.records.length) {
+    drawDynamics(fromIndex: number = 0, toIndex: number = this.context.history.index) {
         // If fromIndex > toIndex then clear canvas and draw from beginning
         if (fromIndex > toIndex) {
             this.clear();
